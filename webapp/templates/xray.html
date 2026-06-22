@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>X-ray screen &middot; COPD Insight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="/">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M8 2v6c0 2-2 3-2 6s2 5 4 5 3-2 3-4M16 2v6c0 2 2 3 2 6s-2 5-4 5"/>
+      </svg>
+      COPD Insight
+    </a>
+    <nav class="site-nav">
+      <a href="/clinical">Severity check</a>
+      <a href="/xray">X-ray screen</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <a class="back-link" href="/">&larr; back</a>
+    <h1 class="page-title">X-ray screen</h1>
+    <p class="page-sub">A ResNet50 transfer-learning model trained to tell visibly normal chest X-rays apart from ones showing COPD-related abnormality.</p>
+
+    <form class="form-card" method="post" enctype="multipart/form-data">
+      <div class="upload-box">
+        <p>Choose a chest X-ray image (JPG or PNG)</p>
+        <input type="file" id="xray_image" name="xray_image" accept="image/png, image/jpeg" required>
+        <div id="preview-wrap">
+          <img id="preview-img" alt="Selected X-ray preview">
+          <p id="preview-name"></p>
+        </div>
+      </div>
+      <div class="submit-row">
+        <button class="primary" type="submit">Screen image</button>
+      </div>
+    </form>
+
+    {% if result %}
+      {% if result.error %}
+        <div class="result-card error">
+          <p class="result-label">Couldn't run that</p>
+          <p>{{ result.error }}</p>
+        </div>
+      {% else %}
+        <div class="result-card {{ 'flag' if result.is_affected else '' }}">
+          <p class="result-label">{{ result.label }}</p>
+          <div class="proba-row">
+            <div class="proba">
+              <span class="name">Affected</span>
+              <span class="num">{{ result.proba_affected }}</span><span class="unit">%</span>
+            </div>
+            <div class="proba">
+              <span class="name">Normal</span>
+              <span class="num">{{ result.proba_normal }}</span><span class="unit">%</span>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">Final-year project &middot; Precision Lung Disease (COPD) via Machine Learning</footer>
+
+  <script>
+    // Client-side only: shows the chosen file immediately so the user can
+    // confirm it's the right image before submitting. Does not touch the
+    // upload itself or app.py.
+    const fileInput = document.getElementById('xray_image');
+    const wrap = document.getElementById('preview-wrap');
+    const img = document.getElementById('preview-img');
+    const name = document.getElementById('preview-name');
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) { wrap.style.display = 'none'; return; }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target.result;
+        name.textContent = file.name;
+        wrap.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>

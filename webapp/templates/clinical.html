@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Severity check &middot; COPD Insight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="/">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M8 2v6c0 2-2 3-2 6s2 5 4 5 3-2 3-4M16 2v6c0 2 2 3 2 6s-2 5-4 5"/>
+      </svg>
+      COPD Insight
+    </a>
+    <nav class="site-nav">
+      <a href="/clinical">Severity check</a>
+      <a href="/xray">X-ray screen</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <a class="back-link" href="/">&larr; back</a>
+    <h1 class="page-title">Severity check</h1>
+    <p class="page-sub">A voting ensemble (KNN + XGBoost + Random Forest) trained to separate Mild/Moderate from Severe/Very Severe COPD using symptoms and vitals.</p>
+
+    <form class="form-card" method="post">
+      <fieldset>
+        <div class="field-grid">
+
+          <div class="field">
+            <label for="age">Age (years)</label>
+            <input type="number" id="age" name="age" min="1" max="120" required>
+          </div>
+
+          <div class="field">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="bmi">BMI (kg/m&sup2;)</label>
+            <input type="number" id="bmi" name="bmi" step="0.1" min="10" max="60" required>
+          </div>
+
+          <div class="field">
+            <label for="pack_history">Smoking pack-years</label>
+            <input type="number" id="pack_history" name="pack_history" step="0.1" min="0" max="150" required>
+            <span class="hint">Packs per day &times; years smoked. 0 if never smoked.</span>
+          </div>
+
+          <div class="field">
+            <label for="smoking">Smoking status</label>
+            <select id="smoking" name="smoking" required>
+              <option value="never">Never smoked</option>
+              <option value="current">Current smoker</option>
+              <option value="former">Former smoker</option>
+            </select>
+            <span class="hint">"Never" is confirmed from training data; current/former is a best estimate.</span>
+          </div>
+
+          <div class="field">
+            <label for="mmrc">Breathlessness (mMRC scale)</label>
+            <select id="mmrc" name="mmrc" required>
+              <option value="0">0 &ndash; Only with strenuous exercise</option>
+              <option value="1">1 &ndash; Breathless hurrying or on a slight hill</option>
+              <option value="2">2 &ndash; Walks slower than peers, or stops for breath at own pace</option>
+              <option value="3">3 &ndash; Stops for breath after ~100m or a few minutes</option>
+              <option value="4">4 &ndash; Too breathless to leave the house / when dressing</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="fev1_pct">FEV1 (% predicted)</label>
+            <input type="number" id="fev1_pct" name="fev1_pct" step="0.1" min="1" max="150" required>
+            <span class="hint">From a spirometry report, if available.</span>
+          </div>
+
+          <div class="field">
+            <label for="respiratory_rate">Respiratory rate (breaths/min)</label>
+            <input type="number" id="respiratory_rate" name="respiratory_rate" min="5" max="60" required>
+          </div>
+
+          <div class="field">
+            <label for="oxygen_saturation">Oxygen saturation (SpO&sub2; %)</label>
+            <input type="number" id="oxygen_saturation" name="oxygen_saturation" step="0.1" min="50" max="100" required>
+          </div>
+
+          <div class="field">
+            <label for="heart_rate">Heart rate category</label>
+            <select id="heart_rate" name="heart_rate" required>
+              <option value="0">Category 0</option>
+              <option value="1">Category 1</option>
+              <option value="2">Category 2</option>
+            </select>
+            <span class="hint">As categorized in the training dataset &ndash; exact bpm ranges weren't documented by the data source.</span>
+          </div>
+
+          <div class="field">
+            <label for="blood_pressure">Blood pressure category</label>
+            <select id="blood_pressure" name="blood_pressure" required>
+              <option value="0">Category 0</option>
+              <option value="1">Category 1</option>
+              <option value="2">Category 2</option>
+              <option value="3">Category 3</option>
+              <option value="4">Category 4</option>
+            </select>
+            <span class="hint">As categorized in the training dataset &ndash; exact mmHg ranges weren't documented.</span>
+          </div>
+
+          <div class="field">
+            <label for="temperature">Temperature category</label>
+            <select id="temperature" name="temperature" required>
+              <option value="0">Category 0</option>
+              <option value="2">Category 2</option>
+              <option value="4">Category 4</option>
+            </select>
+            <span class="hint">Only these three codes appear in the training data.</span>
+          </div>
+
+          <div class="field">
+            <label for="working_place">Working environment category</label>
+            <select id="working_place" name="working_place" required>
+              <option value="1">Category 1</option>
+              <option value="2">Category 2</option>
+              <option value="3">Category 3</option>
+              <option value="4">Category 4</option>
+            </select>
+            <span class="hint">As categorized in the training dataset &ndash; exact meaning wasn't documented.</span>
+          </div>
+
+          <div class="field full">
+            <label>History of heart failure</label>
+            <div class="yesno">
+              <label><input type="radio" name="heart_failure" value="no" checked> No</label>
+              <label><input type="radio" name="heart_failure" value="yes"> Yes</label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>Vaccinated (flu/pneumonia)</label>
+            <div class="yesno">
+              <label><input type="radio" name="vaccination" value="no" checked> No</label>
+              <label><input type="radio" name="vaccination" value="yes"> Yes</label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>Depression</label>
+            <div class="yesno">
+              <label><input type="radio" name="depression" value="no" checked> No</label>
+              <label><input type="radio" name="depression" value="yes"> Yes</label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>Dependent on others for daily activities</label>
+            <div class="yesno">
+              <label><input type="radio" name="dependent" value="no" checked> No</label>
+              <label><input type="radio" name="dependent" value="yes"> Yes</label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>Sputum production</label>
+            <div class="yesno">
+              <label><input type="radio" name="sputum" value="no" checked> No</label>
+              <label><input type="radio" name="sputum" value="yes"> Yes</label>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="submit-row">
+          <button class="primary" type="submit">Check severity</button>
+        </div>
+      </fieldset>
+    </form>
+
+    {% if result %}
+      {% if result.error %}
+        <div class="result-card error">
+          <p class="result-label">Couldn't run that</p>
+          <p>{{ result.error }}</p>
+        </div>
+      {% else %}
+        <div class="result-card {{ 'flag' if result.is_severe else '' }}">
+          <p class="result-label">{{ result.label }}</p>
+          <div class="proba-row">
+            <div class="proba">
+              <span class="name">Severe / very severe</span>
+              <span class="num">{{ result.proba_severe }}</span><span class="unit">%</span>
+            </div>
+            <div class="proba">
+              <span class="name">Mild / moderate</span>
+              <span class="num">{{ result.proba_mild }}</span><span class="unit">%</span>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">Final-year project &middot; Precision Lung Disease (COPD) via Machine Learning</footer>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>COPD Insight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="/">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M8 2v6c0 2-2 3-2 6s2 5 4 5 3-2 3-4M16 2v6c0 2 2 3 2 6s-2 5-4 5"/>
+      </svg>
+      COPD Insight
+    </a>
+    <nav class="site-nav">
+      <a href="/clinical">Severity check</a>
+      <a href="/xray">X-ray screen</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <span class="eyebrow">Final-year ML project &middot; two independent readings</span>
+      <h1>Two ways to read the lungs, side by side.</h1>
+      <p class="lede">One model reads symptoms and vitals. The other reads a chest X-ray. They answer different
+      clinical questions on different patients, so their results are kept separate rather than merged into a single score.</p>
+
+      <div class="wave-strip" aria-hidden="true">
+        <svg viewBox="0 0 2400 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,60 C25,60 35,20 50,20 C65,20 70,92 85,92 C100,92 110,60 125,60 C150,60 175,60 200,60 C225,60 235,20 250,20 C265,20 270,92 285,92 C300,92 310,60 325,60 C350,60 375,60 400,60 C425,60 435,20 450,20 C465,20 470,92 485,92 C500,92 510,60 525,60 C550,60 575,60 600,60 C625,60 635,20 650,20 C665,20 670,92 685,92 C700,92 710,60 725,60 C750,60 775,60 800,60 C825,60 835,20 850,20 C865,20 870,92 885,92 C900,92 910,60 925,60 C950,60 975,60 1000,60 C1025,60 1035,20 1050,20 C1065,20 1070,92 1085,92 C1100,92 1110,60 1125,60 C1150,60 1175,60 1200,60 C1225,60 1235,20 1250,20 C1265,20 1270,92 1285,92 C1300,92 1310,60 1325,60 C1350,60 1375,60 1400,60 C1425,60 1435,20 1450,20 C1465,20 1470,92 1485,92 C1500,92 1510,60 1525,60 C1550,60 1575,60 1600,60 C1625,60 1635,20 1650,20 C1665,20 1670,92 1685,92 C1700,92 1710,60 1725,60 C1750,60 1775,60 1800,60 C1825,60 1835,20 1850,20 C1865,20 1870,92 1885,92 C1900,92 1910,60 1925,60 C1950,60 1975,60 2000,60 C2025,60 2035,20 2050,20 C2065,20 2070,92 2085,92 C2100,92 2110,60 2125,60 C2150,60 2175,60 2200,60 C2225,60 2235,20 2250,20 C2265,20 2270,92 2285,92 C2300,92 2310,60 2325,60 C2350,60 2375,60 2400,60" fill="none" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="wave-caption">flow &middot; volume &middot; trace &mdash; the shape a spirometer draws with every breath</p>
+
+      <div class="tool-grid">
+        <a class="tool-card" href="/clinical">
+          <span class="eyebrow">Tabular model</span>
+          <h2>Severity check</h2>
+          <p>Estimates whether a diagnosed COPD patient's symptoms and vitals look Mild/Moderate or Severe/Very Severe.</p>
+          <span class="go">Open form &rarr;</span>
+        </a>
+        <a class="tool-card" href="/xray">
+          <span class="eyebrow">Imaging model</span>
+          <h2>X-ray screen</h2>
+          <p>Screens an uploaded chest X-ray for visible signs of COPD-related abnormality.</p>
+          <span class="go">Upload image &rarr;</span>
+        </a>
+      </div>
+
+      <p class="disclaimer">
+        <strong>Academic project, not a medical device.</strong> Built for a final-year machine learning
+        project and not validated for clinical use. Please see a doctor for any real health concern.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">Final-year project &middot; Precision Lung Disease (COPD) via Machine Learning</footer>
+</body>
+</html>
